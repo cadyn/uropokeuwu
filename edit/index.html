@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta http-equiv="pragma" content="no-cache"/>
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name ="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <script src="./js/jquery_1.11.0.min.js"></script>
+
+        <meta charset="utf-8"/>
+
+        <!-- Set the title bar of the page -->
+        <title>OnlineCharacterGame -Character Setting- </title>
+
+        <!-- Set the background colour of the document -->
+        <style>
+          a{
+            color:black;
+          }
+          a:hover{
+            color:red;
+          }
+        </style>
+
+        <script>
+          $(function(){
+
+          //Get gamename
+            switch(location.hostname.split(".")[0]){
+              case "127": gamename = "uropoke"; break;
+              case "localhost": gamename = "oricha"; break;
+              case "uropokeonline": gamename = "uropoke"; break;
+              case "oricha": gamename = "oricha"; break;
+            }
+            $('.backgame').attr({"href":location.href.split(":52999")[0]});        
+
+          });
+        </script>
+
+    </head>
+
+    <body>
+      <h2><span id="owner"></span> Character Setting [<span id="mode">Log in</span>]</h2>
+
+      <div id="login_field">
+
+        <p><b>*Login with account/password on <a href="http://ouroporos.xsrv.jp/urocos_archive/php/phpBB3/index.php">the forum</a>*</b></p>
+        <form id="login" action="user_auth" method="post" name="login">
+          <table>
+            <tr>
+              <td>username</td>
+              <td><input type="text" name="username"></td>
+            </tr>
+            <tr>
+              <td>password</td>
+              <td><input type="password" name="password"></td>
+            </tr>          
+            <tr><td colspan="2"></td></tr>
+          </table>
+          <input type="submit">
+        </form>
+
+        <p id="login_err"></p>
+        <span class="menu">-- <a class="backgame" href="">[Back to game]</a></span>
+      </div>
+
+    
+    </body>
+</html>

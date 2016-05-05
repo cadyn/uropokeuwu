@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf8">
+    <title>Chara Setting</title>
+    <script src="./js/jquery_1.11.0.min.js"></script>
+    <script src="./js/jquery.frameAnimation.js"></script>
+
+    <style>      
+        a{
+          color:black;
+        }
+        a:hover{
+          color:red;
+        }
+        .info_mes{
+          width:400px;
+          padding:10px;
+          margin:10px;
+          background-color:#ccc;
+          font-size:20px;
+        }
+        .list_thumb,.edit_cont{
+          background:gray url('./img/tp.png') repeat top left;
+          padding:0px;
+        }
+        input.entry_reset{
+          display:none;
+        }
+        #upload_desc{
+          background-color:#ccc;
+          padding:10px 20px;
+        }
+        .approve_num{
+          background-color:orange;
+          color:white;
+          border-radius: 5px 5px 5px 5px;
+          padding:5px;
+        }
+        .interact_approve_num{
+          background-color:#33cc99;
+          color:white;
+          border-radius: 5px 5px 5px 5px;
+          padding:5px;
+        }
+        .aniframe{
+          margin: 0 auto;
+          display: block;
+          overflow: hidden;
+          background: transparent url('') no-repeat top left;
+        }
+        .motion_name{
+          background-color:#ccc;
+          padding:5px;
+          margin: 10px 0px 5px 0px;
+        }
+        .frame_info{
+          border-bottom:1px solid #999;
+          padding:5px;
+          margin: 10px 0px 5px 0px;
+        }
+        div.row{
+          display:table;
+        }
+        div.cell{
+          display:table-cell;
+        }
+
+    </style>
+    <script>
+      var undefined;
+      $(function(){
+        $('#mylist_table').find('.chara_list_tr').each(function(){
+          var $tr = $(this).clone();
+          var charaname = $tr.attr('data-charaname');
+          $('#interact_field').find('.interact_your_chara').append('<option data-name="'+charaname+'">'+charaname+'</option>');
+        });
+
+        $('.interact_your_chara').change(function(){
+          var sel_chara = $(this).val();
+          $img = $('#mylist_'+sel_chara).find('div[data-motion=stand]').clone();
+          $img.find('.aniframe').each(function(){
+            $(this).frameAnimation({
+              setWidth: $(this).attr('data-width'),
+              frameSpeed: 200,
+              maxFrame: $(this).attr('data-frame'),
+              loop: true
+              
+            });
+          });
+          $(this).next('div').html('');
+          $(this).next('div').append($img);
+        });
+
+        $('.interact_opp_chara').change(function(){
+          var charaname = $(this).val();
+          var motiontype = $(this).parent('form').attr('data-motion');
+          var frame = $(this).find('option:selected').attr('data-frame');
+
+
+          $(this).next('div').html('');
+          $(this).next('div').append('<div class="aniframe"></div>');
+
+          var img = new Image();
+          var imgurl = 'http://'+location.hostname+'/img/'+gamename+'/chara/'+charaname+'_stand.png';
+
+          var aniframe = $(this).next('div').find('.aniframe');
+          aniframe.css({'background-image':'url('+imgurl+')'});
+          img.src = imgurl;
+          img.onload = function(){         
+
+            var width  = img.width;  // 幅
+            var height = img.height; // 高さ
+            aniframe.attr({'data-totalwidth':width});
+            aniframe.attr({'data-width':width/frame});
+            aniframe.attr({'data-height':height});
+            aniframe.css({'width':width/frame,'height':height});
+            
+            aniframe.frameAnimation({
+              setWidth: width/frame,
+              frameSpeed: 200,
+              maxFrame: frame,
+              loop: true
+            });
+          }
+        });
+
+        $('.interact_your_chara,.interact_opp_chara').change(function(){
+          
+          if($('.interact_your_chara').find('option:selected').index() > 0 && $('.interact_opp_chara').find('option:selected').index() > 0){
+            $('#interact_table').show();
+          } else{
+            $('#interact_table').hide();
+          }
+          
+        });
+
+        $('.aniframe').each(function(){
+          var img = new Image();
+          var imgurl = $(this).css("background-image").replace('url("','');
+          var aniframe = $(this);
+          imgurl = imgurl.slice(0,-2);
+          img.src = imgurl;
+          img.onload = function(){         
+            var width  = img.width;  // 幅
+            var height = img.height; // 高さ
+            var frame = aniframe.attr('data-frame');
+            aniframe.attr({'data-totalwidth':width});
+            aniframe.attr({'data-width':width/frame});
+            aniframe.attr({'data-height':height});
+            aniframe.css({'width':width/frame,'height':height});
+            
+            aniframe.frameAnimation({
+              setWidth: width/frame,
+              frameSpeed: 200,
+              maxFrame: frame,
+              loop: true
+            });
+          }
+
+        });
+
+        <%- "var username = '"+user+"'" %>;
+        <%- "var password = '"+pass+"'" %>;
+        var maxLimit_h = 128;
+        var maxLimit_w = 6400;
+    
+        var mode = "Info";
+        var sel_privacy = '<select name="privacy"><option value="0">Private</option><option value="1">Public</option><option value="2">Hidden</option></select>';
+        var sel_approval = '<select name="approval"><option value="0">Approved</option><option value="1">Disapproved</option><option value="2">Waiting for approval</option></select>';
+
+        var opt_privacy = ["Private","Public","Hidden"];
+        var opt_approval = ["Approved","Disapproved","Waiting for approval"];
+
+        var app_num = $('select[name=approval]').find('option[value=2]:selected').length;
+        $('.approve_num').html(app_num);
+        if(app_num == 0){
+          $('.approve_num').hide();
+        }
+
+        var int_app_num = $('select[name=interaction_approval]').find('option[value=2]:selected').length;
+        $('.interact_approve_num').html(int_app_num);
+        if(int_app_num == 0){
+          $('.interact_approve_num').hide();
+        }
+      //Basic functions
+        function resetForm(field){
+          $('#'+field).find('input[type=reset]').click();
+          $('#privacy_form').find('input[type=reset]').click();
+          $('input[type=text]').val('');
+          $('#'+field).find('.list_thumb,.edit_cont').html('');
+          $('#'+field).find('input[type=hidden]').val(0);
+          $('#'+field).find('input[type=number]').val('');
+          $('#'+field).find('.thumb_update').html('');
+          $('#'+field).find('.sys_mes').html('');
+          $('.chara_name').prop('disabled',false);
+          $(".chk_name").html('');
+          $(".chk_name_flag").val(0);
+          //$('#password').prop('disabled',false);
+          if($('#mode').html() == "Entry"){
+            $('.list_thumb:visible').html('');
+          }
+        }
+
+        function make_charalist_table(listData){
+          var imgDirPath = location.href.split(":52999")[0]+'/img/';             
+          var listType = listData['listType'];
+          delete listData['listType'];
+          
+          for(var charaname in listData){
+            var tr = '';
+            var owner = listData[charaname]['owner'];
+            var approval = listData[charaname]['approval'];
+            var privacy = listData[charaname]['privacy'];
+            delete listData[charaname]['owner'];
+            delete listData[charaname]['privacy'];
+            delete listData[charaname]['approval'];
+
+            tr += '<tr id="'+listType+'_'+charaname+'" class="interact_list_tr" data-charaname="'+charaname+'" data-owner="'+owner+'">';
+            
+            if(listType == "mylist"){
+              var app_sel = $.parseHTML(sel_approval);
+              tr += '<td>'+charaname+'<br /><button class="delete_button" name="character" data-name="'+charaname+'">delete</button></td>';
+              tr += '<td id="mylist_'+charaname+'_privacy">'+sel_privacy+'</td>';
+              tr += '<td id="mylist_'+charaname+'_approval">'+$(app_sel).find('option[value='+approval+']').html()+'</td>';
+              var select = privacy;
+            }
+            if(listType == "approval"){
+              var pri_sel = $.parseHTML(sel_privacy);
+              tr += '<td id="approval_'+charaname+'_owner">'+owner+'</td>';
+              tr += '<td>'+charaname+'</td>';
+              tr += '<td id="approval_'+charaname+'_privacy">'+$(pri_sel).find('option[value='+privacy+']').html()+'</td>';
+              tr += '<td id="approval_'+charaname+'_approval">'+sel_approval+'</td>';
+              var select = approval;
+            }
+
+
+            for(var motiontype in listData[charaname]){
+              var num = 0;
+              tr += '<td valign="top">';
+              for(var filename in listData[charaname][motiontype]){
+                tr += '<div class="edit_cont" data-motion="'+motiontype+'" data-num="'+num+'">';
+                if(listType == "mylist"){
+                  tr += motiontype+' [ '+listData[charaname][motiontype][filename]+' ] frames</p>';
+                }
+                if(listType == "approval"){
+                  tr += motiontype+' [ <input name="frame_num" type="number" value="'+listData[charaname][motiontype][filename]+'" step="1" min="1" max="100" style="width:40px;"> ] frames<span class="chk_frame"></span></p>';
+                }
+                tr += '<div class="list_thumb" data-id="'+charaname+'_'+motiontype+'_'+num+'"><img data-filename="'+filename+'" src="'+imgDirPath+gamename+'/chara/'+filename+'"></img></div>';
+                num += 1;
+                tr += '</div>';
+              }
+              tr += '</td>';
+            }
+            tr += '</tr>';
+            tr = $.parseHTML(tr);
+            $(tr).find('option[value='+select+']').prop('selected',true);
+            $('#'+listType+'_table').append(tr);                
+          }
+
+          if(listType == "mylist"){
+        
+          }
+          if(listType == "approval"){
+
+            if(app_num == 0){
+              $('.approve_num').hide();
+            } else{
+              $('.approve_num').show();
+            }
+          }
+        }
+
+      //Get gamename
+        switch(location.hostname.split(".")[0]){
+          case "127": gamename = "uropoke"; break;
+          case "localhost": gamename = "oricha"; break;
+          case "uropokeonline": gamename = "uropoke"; break;
+          case "oricha": gamename = "oricha"; break;
+        }
+        $('.backgame').attr({"href":location.href.split(":52999")[0]});
+
+      //Toggle fields            
+        $('.menu').click(function(){
+          $('.menu').css({"background-color":""});
+          $(this).css({"background-color":"yellow"});
+          mode = $(this).attr("name");
+          $('#mode').html(mode)
+          $('.sys_mes').html('');
+
+          $('#info_field').hide();
+          $('#entry_field').hide();
+          $('#mylist_field').hide();
+          $('#approval_field').hide();
+          $('#interact_approval_field').hide();  
+          $('#interact_field').hide();              
+          if(mode == "Info"){
+            $('#info_field').show();
+
+          } else if(mode == "MyList"){
+            $('#mylist_field').show();
+
+          } else if(mode == "Approval_List"){
+            $('#approval_field').show();
+
+          } else if(mode == "Interact_approval_List"){
+            $('#interact_approval_field').show();
+
+          } else if(mode == "Interact"){
+            $('#interact_field').show();
+            //resetForm('interact_field');
+
+          } else{
+            $('#entry_field').show();
+
+            if(mode == "Entry"){
+              $('.upload_div').each(function(){
+                resetForm('entry_field');
+              });
+              $('#privacy_box').show();
+              $('.upload_div').show();
+              $('#upload_button').html('Entry');
+              $('#upload_button').prop({"disabled":false});
+            }
+
+          }
+
+        });
+            
+
+      //Check privacy select
+        $("#privacy_form").change(function(){
+          $('.privacy_desc').hide();
+          var select = $(this).find('input:checked').val();
+          $('#'+select+"_desc").show();
+        });
+
+
+      //Edit functions
+          //Read member data / check name
+          $(".chara_name").change(function(){
+            $(this).parent('td').next('td').find(".chk_name").html("");
+
+            var inputname = $(this).val().replace(/\s+/g, "");
+            $(this).val(inputname);
+
+              $.ajax({
+                url:'/chara_exist_chk',
+                type:'post',
+                data:{charaname:inputname},
+                success: function(result){
+                  //result => 1)exist 2)no exist
+                  switch(result){
+                    case "exist": var exist = true; break;
+                    case "no exist": var exist = false; break;
+                  }
+                
+                  if($('#mode').html() == "Entry"){
+                    if(!exist){
+                      if(inputname != ""){
+                        
+                        $('#entry_field').find(".chk_name").html('<font color="green"><b>available name</b></font>');
+                        $('#entry_field').find(".chk_name_flag").val(1);
+                      } else{
+                        $('#entry_field').find(".chk_name").html('');
+                        $('#entry_field').find(".chk_name_flag").val(0);
+                      }                      
+                    } else{
+                      $('#entry_field').find(".chk_name").html('<font color="red"><b>This name has been already taken. Use other name</b></font>');
+                      $('#entry_field').find(".chk_name_flag").val(0);
+                    }
+                  }
+
+
+                }
+              });                  
+            
+
+          });
+
+          //Thumbnail upload
+          $(".select_button").on("click",function(e){
+            if($('div[data-mode="'+$('#mode').html()+'"]').find(".chk_name_flag").val() == 1){
+              var motiontype = $(this).attr("name");
+              var $file_input_btn = $("#"+motiontype).find('input.thumb_update');
+              $file_input_btn.click();
+
+            } else{
+              $('div[data-mode="'+$('#mode').html()+'"]').find('.chk_name').html('<font color="red"><b>Input the charactername before uploading images</b></font>')
+            }
+
+          });
+          $(".upload_form > input[type=reset]").click(function(){
+            $(this).parent('.upload_form').next('.list_thumb').html('');
+          });
+
+          $(document).on('click','.thumb_update',function(){
+            $(this).val('');
+            $(this).parent('form').next('.list_thumb').html('');
+          });
+          //Thumbnail display
+          $(document).on('change','.thumb_update',function(){
+            
+              var selfInput = $(this);
+              var motion = $(this).parent('form').attr('data-motion');
+              var frame = $('#'+motion).find('.frame_num').val();
+              var file = $(this).prop('files')[0],
+              fileRdr = new FileReader(),
+              selfFile = $(this).parent('form').next('.list_thumb');
+              selfFile.html('');
+              selfImg = selfFile.find('.imgView');
+              
+              if(!this.files.length){
+                  if(0 < selfImg.size()){
+                      selfImg.remove();
+                      return;
+                  }
+              } else {
+
+                  if(file.type.match('image.png')){
+                      $(this).attr({'data-filename':file.name,'data-updated':true});
+                      if(!(0 < selfImg.size())){
+                          selfFile.html('<img alt="" class="imgView">');
+
+                      }
+                      var prevElm = selfFile.find('.imgView');
+                      fileRdr.onload = function() {
+                       
+                          prevElm.attr('src', fileRdr.result);
+                          prevElm.wrap('<div class="aniframe" data-filename="'+file.name+'" data-frame="'+frame+'" data-totalwidth="'+prevElm.width()+'" data-width="'+prevElm.width()/frame+'" data-height="'+prevElm.height()+'" style="width:'+prevElm.width()/frame+'px;height:'+prevElm.height()+'px;background-image:url(\''+fileRdr.result+'\');">');
+                          selfFile.find('.aniframe').each(function(){
+                            $(this).frameAnimation({
+                            setWidth: prevElm.width()/frame,
+                            frameSpeed: 200,
+                            maxFrame: frame,
+                            loop: true
+                            });
+                          })
+                          selfFile.css({'width':prevElm.width()/frame});
+                          var err_flag = false;
+                          if($('#'+motion).find('.frame_num').val() == ""){
+                            err_flag = true;
+                            $('#'+motion).find('.chk_frame').html('<font color="red"><b>Input the number of frames in animation.</b></font>');
+                          } else{
+                            $('#'+motion).find('.chk_frame').html('');
+                          }
+                          if(!selfInput.hasClass('bind')){
+                            if(prevElm.height() > maxLimit_h){
+                              err_flag = true;
+                              var err_type = "over_h";
+                            }
+                            if(prevElm.width() > maxLimit_w){
+                              err_flag = true;
+                              var err_type = "over_w";
+                            }
+                            
+                            if($('.chk_name_flag').val() == 0){
+                              err_flag = true;
+                              if($('.chara_name').val() == ""){
+                                $('.chk_name').html('<font color="red"><b>Input the character name</b></font>');
+                              }
+                            }
+
+                          }
+
+                          if(err_flag == true){
+                            switch(err_type){
+                              case "over_h":
+                                selfFile.html('<b>Image\'s height must be under '+maxLimit_h+'px</b>');
+                              break;
+                              case "over_w":
+                                selfFile.html('<b>Image\'s width must be under '+maxLimit_w+'px</b>');
+                              break;
+                            }
+                            selfFile.prev('form').find('input[type=reset]').click();
+                          }
+                          prevElm.remove();
+                          
+
+                      }
+                      fileRdr.readAsDataURL(file);
+                  } else {
+                      if(0 < selfImg.size()){
+                          selfImg.remove();
+                          return;
+                      }
+                  }
+              }
+
+          });
+
+        //Entry function
+          $("#upload_button").on("click",function(e){
+            var mode = $('#mode').html();
+              var charaname = $('div[data-mode="'+mode+'"]').find(".chara_name").val(),
+              nameflag = $('div[data-mode="'+mode+'"]').find(".chk_name_flag").val(),
+              privacy = $("#privacy_form").find('input:checked').val();
+             
+              if( mode == "Entry"){
+                if(charaname != "" && nameflag == 1){
+
+                  if( $('#stand').find('.thumb_update')[0].files[0] != null && $('#walk').find('.thumb_update')[0].files[0] != null ){
+
+                      var fds = [];
+
+                      $(".upload_form").each(function(){
+                        var fileflag = $(this).find(".thumb_update")[0].files[0];
+                        var motiontype = $(this).attr("data-motion");
+                        var imgnum = $(this).attr("data-imgnum");
+                        var framenum = $(this).prev('table').find(".frame_num").val();
+                        var filename = $(this).next('.list_thumb').find('aniframe').attr('data-filename');
+                        var imgHeight = $(this).next('.list_thumb').find('aniframe').attr('data-height');
+                        var imgWidth = $(this).next('.list_thumb').find('aniframe').attr('data-totalwidth');
+                        
+
+                        if(framenum == ""){
+                          if(motiontype == "stand" || motiontype == "walk" ){
+                            $(this).prev('table').find('.chk_frame').html('<font color="red"><b>Input the number of frames in animation.</b></font>');
+                          }
+                          return true;  // continue の代わり
+                        }
+                        
+                        $(this).prev('table').find(".chk_frame").html('');
+                        if( fileflag != null){
+                          
+
+                          var $update = $('#'+motiontype).find(".update");
+                          var fd = new FormData( $(this)[0] );
+                          fd.append("username",username);
+                          fd.append("password",password);
+                          fd.append("charaname", charaname);
+                          fd.append("motiontype", motiontype);
+                          fd.append("imgnum", imgnum);
+                          fd.append("frame_num", $(this).prev('table').find('.frame_num').val());
+                          fd.append("privacy",privacy);
+                          fd.append("imgHeight",imgHeight);
+                          fd.append("imgWidth",imgWidth);
+                          fds.push(fd);
+                        }
+
+                      });
+
+
+                      fds.forEach(function(fd,index,array){
+                        $.ajax({
+                            url: '/chara_add',
+                            type: 'post',
+                            data: fd,
+                            async:false,
+                            processData: false,
+                            contentType: false,
+                            success: function(result){
+                              
+                              if(result == "Entry limit"){
+                                  $('#update_result').html('<font color="red"><b>Reached your entry limit. If you want to entry new character, delete another character once.</b></font>');
+                              } else if(result != ""){
+                                var charaData = JSON.parse(result);
+                                
+                                tr = "";
+                                tr += '<td class="list_charaname">'+charaname+'<br /><button class="delete_button" name="character" data-name="'+charaname+'">delete</button></td>';
+                                tr += '<td class="list_owner">'+username+'</td>';
+                                tr += '<td class="list_privacy">';
+                                tr += sel_privacy + '</td>';
+                                tr += '<td class="list_approval">'+opt_approval[charaData['approval']]+'</td>';
+
+                                $('#entry_field').find('.aniframe').each(function(){
+                                  var $up_img = $(this).parent('div');
+                                  var motiontype = $up_img.attr('data-id').replace("thumb_","");
+                                  tr += '<td><p class="motion_name">'+motiontype+'</p><div class="edit_cont" data-motion="'+motiontype+'">'+$up_img.html()+'</div><p class="frame_info">'+$up_img.find('.aniframe').attr('data-frame')+' frames</p></td>';
+                                });
+                                tr = $.parseHTML('<tr id="mylist_'+charaname+'"class="chara_list_tr" data-charaname="'+charaname+'" data-owner="'+username+'">'+tr+'</tr>');
+                                $(tr).find('option[value='+charaData['privacy']+']').prop('selected',true);
+                                $(tr).find('.aniframe').each(function(){
+                                  $(this).frameAnimation({
+                                    setWidth: $(this).attr('data-width'),
+                                    frameSpeed: 200,
+                                    maxFrame: $(this).attr('data-frame'),
+                                    loop: true
+                                    
+                                  });
+                                });
+                                $('#mylist_table').append(tr);
+
+                                var currentEntry = parseInt($('.entried_num').html());
+                                currentEntry += 1;
+                                $('.entried_num').html(currentEntry);
+
+                                $('.upload_div').each(function(){
+                                  resetForm($(this).attr('id'));  
+                                });
+                                
+                                  $('#update_result').html('<font color="green"><b>'+charaname+' added<br />Kindly wait for the approval by moderators to use them</b></font>');
+                                
+                              }                             
+                            }
+                        });                          
+
+                      });                          
+                    
+
+
+                  } else{
+                    $(".upload_div").each(function(){
+                      var fileflag = $(this).find(".thumb_update")[0].files[0],
+                      framenum = $(this).find(".frame_num").val(),
+                      motiontype = $(this).attr("id");
+                      if(motiontype == "stand" || motiontype == "walk" ){
+                        if(fileflag == null){
+                          $(this).find(".chk_file").html('<font color="red"><b>Select the file of character motion.</b></font>')
+                        }
+                      }
+                    });
+                    
+                  }
+                } else{
+                  if(charaname == ""){
+                    $(".chk_name:visible").html('<font color="red"><b>Input the character name</b></font>');
+                  }
+                }                  
+
+              }
+
+          });
+
+        //Edit/Approval function
+          $(document).on('click',".update_button",function(e){
+            var $update_btn = $(this);
+            var sendData = {};
+
+            if($('#mode').html() == 'MyList'){
+              var $listTable = $('#mylist_table');
+              var listType = "mylist";
+            }
+
+            if($('#mode').html() == 'Approval_List'){
+              var $listTable = $('#approval_table');
+              var listType = "approval";
+            }
+
+            if($('#mode').html() == 'Interact_approval_List'){
+              var $listTable = $('#interaction_approval_table');
+              var listType = "interaction_approval";
+            }
+
+            if($('#mode').html() == 'Interact'){
+              var $listTable = $('#interact_table');
+              var listType = "interact";
+            }
+
+            if(listType == "interact"){
+              if($('#bind1').find('.thumb_update')[0].files[0] == null){
+                //at least one file chosen
+                $('#bind1').find('.sys_mes').html('<font color="red"><b>Need one motion at least</b></font>');
+              } else{
+                var charaname = $('.interact_your_chara').find('option:selected').html();
+                var opp_chara = $('.interact_opp_chara').find('option:selected').html();
+                
+                var fds = [];
+                $('#interact_table').find('.cell').each(function(){
+                  if($(this).find('.thumb_update')[0].files[0] == null){
+                    return false; //stop
+                  }
+
+                  var motiontype = $(this).attr('id');
+                  var frame = $(this).find('.frame_num').val();
+                  var form = $(this).find('.upload_form');
+                  var file = $(this).find('.thumb_update')[0].files[0];
+                  var img_num = $(this).find('.thumb_update').attr('data-imgnum');
+
+                  var fd = new FormData( form[0] );
+                  fd.append("username",username);
+                  fd.append("password",password);
+                  fd.append("charaname", charaname);
+                  fd.append("opp_chara", opp_chara);
+                  fd.append("motiontype", motiontype);
+                  fd.append("img_num",img_num);
+                  fd.append("frame_num", frame);
+                  fds.push(fd);
+                });
+
+                fds.forEach(function(fd,index,array){
+                  $.ajax({
+                      url: '/interact_entry',
+                      type: 'post',
+                      data: fd,
+                      async:false,
+                      processData: false,
+                      contentType: false,
+                      success: function(result){
+                        resetForm('interact_field');
+                        $('#interact_field').find('.update_mes').html('<font color="green"><b>Entried your interaction motion. Kindly wait for opponent\'s owner apporoval</b></font>');
+
+
+                      }
+                  });
+                });
+              }
+            } else{
+              $listTable.find('tr.chara_list_tr').each(function(){
+                var $chara_tr = $(this);
+                var charaname = $(this).attr('data-charaname');
+
+                sendData[charaname] = {};
+                if($('#mode').html() == 'MyList'){
+                  sendData[charaname]['privacy'] = $(this).find('select[name=privacy] > option:selected').val();
+                }
+                if($('#mode').html() == 'Approval_List'){
+                  sendData[charaname]['approval'] = $(this).find('select[name=approval] > option:selected').val();
+                }
+                if($('#mode').html() == 'Interact_approval_List'){
+                  sendData[charaname] = {};
+                  $('#interaction_approval_table').find('.list_approval').each(function(){
+                    var opp_chara = $(this).prev('p.motion_name').html().split("_")[1];
+
+                    sendData[charaname][opp_chara] = $(this).find('option:selected').val();
+                  });
+
+                }
+                
+                sendData[charaname]['owner'] = $(this).parents('tr').attr('data-owner');
+              });
+              
+              $.ajax({
+                url:'/chara_edit',
+                type:'post',
+                data:{username:username,password:password,listType:listType,data:sendData},
+                success: function(result){
+                  $update_btn.next('.update_mes').html('<font color="green"><b>Updated all data here</b></font>');
+                  if($('#mode').html() == 'Approval_List'){
+                    var app_num = $('select[name=approval]').find('option[value=2]:selected').length;
+                    $('.approve_num').html(app_num);
+                    if(app_num == 0){
+                      $('.approve_num').hide();
+                    } else{
+                      $('.approve_num').show();
+                    }
+                  }
+
+                  if($('#mode').html() == 'Interact_approval_List'){
+                    var app_num = $('select[name=interaction_approval]').find('option[value=2]:selected').length;
+                    $('.interact_approve_num').html(app_num);
+                    if(app_num == 0){
+                      $('.interact_approve_num').hide();
+                    } else{
+                      $('.interact_approve_num').show();
+                    }
+                  }
+                }
+              });
+            }
+
+          });
+
+        //Delete function
+          $(document).on("click",".delete_button",function(e){
+            if($('#mode').html() == "Entry"){
+              //Reset form data
+              var del_type = $(this).attr('name');
+              var charaname = $('#entry_field').find('.chara_name').val(),
+              motiontype = $(this).attr('name'),
+              imgnum = $(this).attr('data-imgnum');
+              var data_id = charaname+'_'+motiontype+'_'+imgnum;
+              
+              $('.upload_form[data-motion="'+motiontype+'"]').find('input[type=reset]').click();
+              $('.list_thumb[data-id="'+data_id+'"]').html('');
+            }
+
+            if($('#mode').html() == "MyList"){
+              var del_type = $(this).attr('data-name');
+              if(del_type == "interact"){
+                //Delete each interaction Data
+                var charaname = $(this).parents('tr').attr('data-charaname');
+                var opp_chara = $(this).attr('data-oppchara');
+                var owner = username;                
+                
+                // 「OK」時の処理開始 ＋ 確認ダイアログの表示
+                if(window.confirm('Are you sure to delete this interaction?')){
+                  $.ajax({
+                      url: '/interact_delete',
+                      type: 'post',
+                      data: {charaname:charaname,opp_chara:opp_chara,owner:owner,username:username,password:password},
+                      success: function(msg){
+                        $('.list_bind_'+opp_chara).remove();
+                        $('#mylist_field').find('.update_mse').html(msg);
+                      }
+                  });
+                } else{
+                  //Canceled
+                }         
+              }
+
+              if(del_type == "character"){
+                //Delete character data
+                var charaname = $(this).parents('tr').attr('data-charaname');
+                var owner = username;
+                // 「OK」時の処理開始 ＋ 確認ダイアログの表示
+                if(window.confirm('Are you sure to delete this character?')){
+                  $.ajax({
+                    url: '/chara_delete',
+                    type: 'post',
+                    data: {charaname:charaname,owner:owner,username:username,password:password},
+                    success: function(msg){
+                      $('#mylist_'+charaname).remove();
+                      var currentEntry = $('.entried_num').html();
+                      currentEntry -= 1;
+                      $('.entried_num').html(currentEntry);
+                      $('#mylist_field').find('.update_mse').html(msg);
+                    }
+                  });
+                } else{
+                  //Canceled
+                }                    
+              }
+            } //if($('#mode').html() == "MyList"){
+              
+            
+          });
+
+      //Edit functions END
+
+      });
+    </script>
+</head>
+ 
+ 
+<body>
+
+
+      <h2><span id="owner"></span> Character Setting [<span id="mode">Info</span>]</h2>
+
+      <div id="body_field">
+        <span class="menu" id="mn_desc" name="Info" style="background-color:yellow"><a href="#desc">[Information]</a></span> 
+        <span class="menu" id="mn_mylist" name="MyList"><a href="#mylist">[My List]</a></span> 
+        <% if (group_type == "global_mod") { %>        
+        <span class="menu" id="mn_approval_list" name="Approval_List"><a href="#aproval_list">[Approve]</span></a><span class="approve_num"></span> 
+        <% } %>
+
+        <span class="menu" id="mn_interact_approval_list" name="Interact_approval_List"><a href="#interct_aproval_list">[Interact Approve]</span></a><span class="interact_approve_num"></span> 
+        <span class="menu" id="mn_entry" name="Entry"><a href="#entry">[Entry]</a></span>
+
+        <span class="menu" id="mn_interact" name="Interact"><a href="#interact">[Interact]</a></span>
+
+        <span class="menu">-- <a class="backgame" href="">[Back to game]</a></span>
+        <br />
+        <hr>
+        <div id="info_field">
+          <div class="info_mes">[Entry your character]</div>
+          <span style="margin-left:50px">↓</span><br />
+          <div class="info_mes">[Wait for admin's approval]</div>
+          <span style="margin-left:50px">↓ After approval (if not be disapproved)</span><br />
+          <div class="info_mes">[Available to use them in the game!]</div>
+        </div>
+
+        <div id="mylist_field" style="display:none">
+          <!--User area-->
+            <%-mylistHTML %>
+          
+        </div>
+
+        <% if (group_type == "global_mod") { %>        
+        <div id="approval_field" style="display:none">
+          <!--Admin area-->
+            <%-apprlistHTML %>
+          
+        </div>
+        <% } %>
+        
+        <div id="interact_approval_field" style="display:none">
+          <!--Admin area-->
+            <%-interactlistHTML %>
+          
+        </div>
+
+        <div id="entry_field" data-mode="Entry" style="display:none">
+          <div id="upload_desc">
+            *** The source image file must be..<br />
+            -- PNG format<br />
+            -- Strip style<br />
+            -- Max Height : 128px , Max Width : 6400px ]<br /><br />
+            <font color="red">*Example [6 frames]</font><br /><img src="./img/hitokage_stand.png"></img>
+
+          </div>
+          <form id="chara_namepass_form">
+            <table id="chara_name_box">
+              <tr>
+                <td>Character name</td>
+                <td><input class="chara_name" type="text" size="20" val="" maxlength="20"></td>
+                <td>
+                  <span class="chk_name sys_mes"></span>
+                  <input type="hidden" class="chk_name_flag chk_flag" val='0'>
+                </td>
+              </tr>
+            </table>
+            
+            <input type="reset" val="reset" style="display:none;">
+          </form>
+
+          <hr>
+          <table id="privacy_box">
+            <tr>
+              <td>Privacy</td>
+            </tr>
+            <tr>
+              <td>
+                <form id="privacy_form">
+                  <input type="radio" name="privacy" value="0" checked="checked">Private
+                  <input type="radio" name="privacy" value="1">Public
+                  <input type="radio" name="privacy" value="2">Hidden
+                  <input type="reset" val="reset" style="display:none;">
+                </form>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <span id="0_desc" class="privacy_desc" style="color:green">*Available for you in ONLINE mode, or as NPC in OFFLINE mode</span>
+                <span id="1_desc" class="privacy_desc" style="color:blue;display:none;">*Available for all user in ONLINE/OFFLINE mode</span>
+                <span id="2_desc" class="privacy_desc" style="color:red;display:none;">*Available for you in ONLINE mode only</span>
+              </td>
+            </tr>
+          </table>
+          
+          <hr>
+          <div id="stand" class="upload_div" style="padding:10px;margin:0px;">
+            <h3>Stand motion [Required] <span class="update"></span></h3>
+            
+            <span class="chk_file sys_mes"></span>
+
+            <table>
+              <tr>
+                <td>Number of frames in the animation</td>
+                <td><input class="frame_num chk_flag" type="number" data-motion="stand" step="1" min="1" max="100"></td>
+                <td><span class="chk_frame sys_mes"></span></td>
+              </tr>
+            </table>
+            <form class="upload_form" data-motion="stand" data-imgnum="0" enctype="multipart/form-data" method="post">
+              <input class="thumb_update" type="file" name="select_files" accept="image/png"><br />
+              <input class="entry_reset" type="reset" val="reset">
+            </form>
+
+            <div class="list_thumb" data-id="thumb_stand">
+            </div>
+
+            <hr>
+          </div>
+
+
+          <div id="walk" class="upload_div" style="padding:10px;margin:0px;">
+            <h3>Walk motion [Required] <span class="update"></span></h3>
+
+            <span class="chk_file sys_mes"></span>
+
+            <table>
+                <td>Numbers of frames in the animation</td>
+                <td><input class="frame_num chk_flag" type="number" data-motion="walk" step="1" min="1" max="100"></td>
+                <td><span class="chk_frame sys_mes"></span></td>
+              </tr>
+            </table>
+            <form class="upload_form" data-motion="walk" data-imgnum="0" enctype="multipart/form-data" method="post">
+              <input class="thumb_update" type="file" name="select_files" accept="image/png"><br />
+              <input class="entry_reset" type="reset" val="reset">
+            </form>
+            <div class="list_thumb" data-id="thumb_walk">
+            </div>
+
+            <hr>
+          </div>
+
+          <div id="appeal" class="upload_div" style="padding:10px;margin:0px;">
+            <h3>Appeal motion [Optional]<span class="update"></span></h3>
+            
+            <span class="chk_file sys_mes"></span>
+
+            <table>
+                <td>Numbers of frames in the animation</td>
+                <td><input class="frame_num chk_flag" type="number" data-motion="appeal" step="1" min="1" max="100"></td>
+                <td><span class="chk_frame sys_mes"></span></td>
+              </tr>
+            </table>
+            <form class="upload_form" data-motion="appeal" data-imgnum="0" enctype="multipart/form-data" method="post">
+              <input class="thumb_update" type="file" name="select_files" accept="image/png"><br />
+              <input type="reset" val="reset">
+            </form>
+            <div class="list_thumb" data-id="thumb_appeal">
+            </div>
+
+            <hr>
+          </div>
+
+
+          <div class="button_box">
+              <button id="upload_button" class="btn btn-danger btn-default"></button><br />
+              <span id="update_result" class="sys_mes"></span>
+          </div>
+        </div>
+
+
+        <div id="interact_field" data-mode="Interact" style="display:none">
+          <div id="upload_desc">
+            *** The source image file must be..<br />
+            -- PNG format<br />
+            -- Strip style<br />
+            -- Max Height : 128px , Max Width : 6400px ]<br /><br />
+            <font color="red">*Example [6 frames]</font><br /><img src="./img/hitokage_stand.png"></img>
+
+          </div>
+
+          <hr>
+
+          <div id="interact_div" class="upload_div" style="padding:10px;margin:0px;">
+            <h3>Interact motion <span class="update_mes"></span></h3>
+            <p>[Select your character] => [Select opponent character] => [Entry interact motions] => [Wait for opponent's owner approval]<br /><font color="red">*Until opponent's owner approved, you can't use this interaction in the game*</font></p>
+            <form id="chara_namepass_form">
+              <table id="chara_name_box">
+                <tr>
+                  <td>Your character</td>
+                  <td>Opponent character<br />("Public"/"Private" characters)</td>
+                </tr>
+                <tr valign="top">
+                  <td>
+                    <select class="interact_your_chara">
+                      <option>Choose Your character</option>
+                    </select>
+                    <div class="your_img"></div>
+                  </td>
+                  <td>
+                    <select class="interact_opp_chara">
+                      <option>Choose Opponent character</option>
+                      <% Object.keys(charaNameList).forEach(function(name){ %>
+                          <option data-frame=<%= charaNameList[name] %>><%= name %></option>
+                      <% }) %>
+                    </select>
+                    <div class="opp_img list_thumb"></div>
+                  </td>
+                </tr>
+              </table>
+              
+              <input type="reset" val="reset" style="display:none;">
+            </form>
+
+            <div id="interact_table" style="display:none;">
+
+              <div class="row">
+
+                <div class="cell" id="bind1">
+                  <p class="motion_name">Interaction_1 [Required]</p>
+                  
+                  <span class="chk_frame sys_mes"></span><br />
+                  frame num
+                  <input class="frame_num chk_flag" type="number" data-motion="bind1" step="1" min="1" max="100">
+                  <form class="upload_form" name="bind1_form" data-motion="bind1">
+                    <input type="file" class="thumb_update bind" data-imgnum="0" name="select_files" accept="image/png"><br><input class="interact_reset" type="reset" val="reset" style="display:none;">
+                  </form>
+                  <div class="list_thumb">
+                  </div>
+                </div>
+
+                <div class="cell" id="bind2">
+                  <p class="motion_name">Interaction_2 [Optional]</p>
+                  
+                  <span class="chk_frame sys_mes"></span><br />
+                  frame num
+                  <input class="frame_num chk_flag" type="number" data-motion="bind2" step="1" min="1" max="100">
+                  <form class="upload_form" name="bind1_form" data-motion="bind2">
+                    <input type="file" class="thumb_update bind" data-imgnum="1" name="select_files" accept="image/png"><br><input class="interact_reset" type="reset" val="reset">
+                  </form>
+                  <div class="list_thumb">
+                  </div>
+                </div>
+
+                <div class="cell" id="bind3">
+                  <p class="motion_name">Interaction_3 [Optional]</p>
+                  
+                  <span class="chk_frame sys_mes"></span><br />
+                  frame num
+                  <input class="frame_num chk_flag" type="number" data-motion="bind3" step="1" min="1" max="100">
+                  <form class="upload_form" name="bind1_form" data-motion="bind3">
+                    <input type="file" class="thumb_update bind" data-imgnum="2" name="select_files" accept="image/png"><br><input class="interact_reset" type="reset" val="reset">
+                  </form>
+                  <div class="list_thumb">
+                  </div>
+                </div>
+   
+                <div class="cell" id="bind4">
+                  <p class="motion_name">Interaction_4 [Optional]</p>
+                  
+                  <span class="chk_frame sys_mes"></span><br />
+                  frame num
+                  <input class="frame_num chk_flag" type="number" data-motion="bind4" step="1" min="1" max="100">
+                  <form class="upload_form" name="bind1_form" data-motion="bind4">
+                    <input type="file" class="thumb_update bind" data-imgnum="3" name="select_files" accept="image/png"><br><input class="interact_reset" type="reset" val="reset">
+                  </form>
+                  <div class="list_thumb">
+                  </div>
+                </div>
+
+              </div>
+              <hr>
+              <div>
+                  <button class="update_button bind">update</button>
+              </div>
+            </div>
+
+          </div>
+
+
+      </div>
+</body>
+ 
+</html>

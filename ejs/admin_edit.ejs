@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf8">
+    <title>Chara Setting</title>
+    <script src="<%=path %>/js/jquery_1.11.0.min.js"></script>
+    <script src="<%=path %>/js/jquery.frameAnimation.js"></script>
+    <script type="text/javascript" src="<%=path %>/js/edit_func.js"></script>
+    <style>      
+        a{
+          color:black;
+        }
+        a:hover{
+          color:red;
+        }
+        .info_mes{
+          width:400px;
+          padding:10px;
+          margin:10px;
+          background-color:#ccc;
+          font-size:20px;
+        }
+        .list_thumb,.edit_cont{
+          background:gray url('./img/tp.png') repeat top left;
+          padding:0px;
+        }
+        .aniframe{
+          margin: 0 auto;
+          display: block;
+          overflow: hidden;
+          background: transparent url('') no-repeat top left;
+        }
+        
+
+    </style>
+
+    <script>
+      $(function(){
+        <%- "username = '"+user+"'" %>;
+        <%- "password = '"+pass+"'" %>;
+
+
+      //Get gamename
+        switch(location.hostname.split(".")[0]){
+          case "127": gamename = "uropoke"; break;
+          case "localhost": gamename = "oricha"; break;
+          case "uropokeonline": gamename = "uropoke"; break;
+          case "oricha": gamename = "oricha"; break;
+        }
+        $('.backgame').attr({"href":location.href.split(":52999")[0]});        
+
+
+        $('.aniframe').each(function(){
+            $(this).animation();
+        });
+
+        $(".chara_delete").chara_delete();
+        
+        $(".image_delete").image_delete();
+
+        $(".image_upload").image_upload();
+        $(".image_upload").thumbnail();
+
+      });
+    </script>
+</head>
+ 
+ 
+<body>
+  <h2>Admin edit</h2>
+  <%- tableHTML %>
+</body>
+ 
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta http-equiv="pragma" content="no-cache"/>
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name ="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <script src=".././js/jquery_1.11.0.min.js"></script>
+        <meta charset="utf-8"/>
+        <title>CONTROL PANEL</title>
+        <script>
+        <!--
+
+            $(function(){
+	        	$("#submit").click(function(){
+
+	        		mes = $("#message").val();
+	        		db = $("#DB").val();
+                    console.log(mes);
+	                $.ajax({
+	                  type: "POST",
+	                  url: "/systemmes",
+	                  data: {"mes":mes,"db":db},
+	                  dataType: "text"
+	                });
+	        	});
+	        	
+
+
+            });
+        -->
+        </script>
+    </head>
+    <body>
+    	<form id="control">
+			<select id="DB">
+				<option value="test">test</option>
+				<option value="oricha">oricha</option>
+				<option value="uropokeon">uropokeon</option>
+			</select>
+			<textarea id="message" value="" cols="100" rows="5" maxlength="170"></textarea>
+			<input type="button" id="submit" value="send">
+    	</form>
+    </body>
+</html>
