@@ -22,7 +22,7 @@ function getGamename(req){
 		case "127.0.0.1": var gamename = "oricha"; break;
 		case "localhost": var gamename = "uropoke"; break;
 		case "oricha.ouroporos.net": var gamename = "oricha"; break;
-		case "uropokeonline.ouroporos.net": var gamename = "uropoke"; break;
+		case "lJJHigginsl.github.io": var gamename = "uropoke"; break;
 	}
 	return gamename;
 }
