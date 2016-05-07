@@ -1,0 +1,24 @@
+{
+  "name": "OCC",
+  "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "dependencies": {
+    "body-parser": "^1.14.2",
+    "express": "^4.4.5",
+    "fs-extra": "^0.26.5",
+    "merge": "^1.2.0",
+    "multer": "^1.1.0",
+    "opts": "^1.2.2",
+    "redis": "^2.4.2",
+    "ws": "^0.4.32",
+  },
+  "engines": {
+    "node": "*"
+  },
+  "scripts": {
+    "start": "node index.js"
+  }
+}

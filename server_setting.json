@@ -1,0 +1,80 @@
+[{
+    "name"      : "Index",
+    "script"    : "./index.js",
+},{
+    "name"      : "CharaEdit",
+    "script"    : "./chara_edit.js",
+    "args"      : "-p 52999"
+},{
+    "name"      : "UROPOKE_selectroom",
+    "script"    : "./server.js",
+    "args"      : "-p 50000"
+},{
+    "name"      : "UROPOKE_Room1",
+    "script"    : "./server.js",
+    "args"      : "-p 50001"
+},{
+    "name"      : "UROPOKE_Room2",
+    "script"    : "./server.js",
+    "args"      : "-p 50002"
+},{
+    "name"      : "UROPOKE_Room3",
+    "script"    : "./server.js",
+    "args"      : "-p 50003"
+},{
+    "name"      : "UROPOKE_Room4",
+    "script"    : "./server.js",
+    "args"      : "-p 50004"
+},{
+    "name"      : "UROPOKE_Room5",
+    "script"    : "./server.js",
+    "args"      : "-p 50005"
+},{
+    "name"      : "UROPOKE_Room6",
+    "script"    : "./server.js",
+    "args"      : "-p 50006"
+},{
+    "name"      : "UROPOKE_Room7",
+    "script"    : "./server.js",
+    "args"      : "-p 50007"
+},{
+    "name"      : "UROPOKE_Room8",
+    "script"    : "./server.js",
+    "args"      : "-p 50008"
+},{
+    "name"      : "ORIGINAL_selectroom",
+    "script"    : "./server.js",
+    "args"      : "-p 51000"
+},{
+    "name"      : "ORIGINAL_Room1",
+    "script"    : "./server.js",
+    "args"      : "-p 51001"
+},{
+    "name"      : "ORIGINAL_Room2",
+    "script"    : "./server.js",
+    "args"      : "-p 51002"
+},{
+    "name"      : "ORIGINAL_Room3",
+    "script"    : "./server.js",
+    "args"      : "-p 51003"
+},{
+    "name"      : "ORIGINAL_Room4",
+    "script"    : "./server.js",
+    "args"      : "-p 51004"
+},{
+    "name"      : "ORIGINAL_Room5",
+    "script"    : "./server.js",
+    "args"      : "-p 51005"
+},{
+    "name"      : "ORIGINAL_Room6",
+    "script"    : "./server.js",
+    "args"      : "-p 51006"
+},{
+    "name"      : "ORIGINAL_Room7",
+    "script"    : "./server.js",
+    "args"      : "-p 51007"
+},{
+    "name"      : "ORIGINAL_Room8",
+    "script"    : "./server.js",
+    "args"      : "-p 51008"
+}]
