@@ -1,0 +1,1 @@
+*This file is for getting user auth data from the forum where I used before. It doesn't work without it, so just ignore it and consider about replacing something for the user auth.
