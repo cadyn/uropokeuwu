@@ -14,7 +14,7 @@ var app = express();
 app
 	.use(vhost('127.0.0.1',express.static(__dirname + "/game/test/")))
 	.use(vhost('localhost',express.static(__dirname + "/game/public/")))
-	.use(vhost('uropokeonline.ouroporos.net',express.static(__dirname + "/game/public/")))
+	.use(vhost('lJJHigginsl.github.io',express.static(__dirname + "/game/public/")))
 	.use(vhost('oricha.ouroporos.net',express.static(__dirname + "/game/public/")))
 app.use(bodyParser.urlencoded({extended: true}));
 
@@ -54,7 +54,7 @@ app.get('/roomcnt',function(req,res){
 		case "127.0.0.1": var dbname = "oricha"; break;
 		case "localhost": var dbname = "uropokeon"; break;
 		case "oricha.ouroporos.net": var dbname = "oricha"; break;
-		case "uropokeonline.ouroporos.net": var dbname = "uropokeon"; break;
+		case "lJJHigginsl.github.io": var dbname = "uropokeon"; break;
 	}
 
 	rediscli.scard(dbname+'_selectroom',function(err,sr_num){
@@ -92,7 +92,7 @@ app.post('/chara_img_get',function(req,res){
 		case "127.0.0.1": var gamename = "oricha"; break;
 		case "localhost": var gamename = "uropoke"; break;
 		case "oricha.ouroporos.net": var gamename = "oricha"; break;
-		case "uropokeonline.ouroporos.net": var gamename = "uropoke"; break;
+		case "lJJHigginsl.github.io": var gamename = "uropoke"; break;
 	}
 	var filepath = './chara_data/chara_set_'+gamename+'.json';
 	var imgData = fs.readFileSync(filepath);
@@ -114,7 +114,7 @@ app.post('/chara_data_get_all',function(req,res){
 		case "127.0.0.1": var gamename = "oricha"; break;
 		case "localhost": var gamename = "uropoke"; break;
 		case "oricha.ouroporos.net": var gamename = "oricha"; break;
-		case "uropokeonline.ouroporos.net": var gamename = "uropoke"; break;
+		case "lJJHigginsl.github.io": var gamename = "uropoke"; break;
 	}
 	var filepath = __dirname+'/chara_data/chara_set_'+gamename+'.json';
 	var imgData = fs.readFileSync(filepath);
