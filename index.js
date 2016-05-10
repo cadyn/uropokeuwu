@@ -107,7 +107,7 @@ app.post('/chara_img_get',function(req,res){
 	
 });
 
-
+/*
 app.post('/chara_data_get_all',function(req,res){
 	var host = req.hostname;
 	switch(host){
@@ -130,6 +130,8 @@ app.post('/chara_data_get_all',function(req,res){
 
 	var sendData = {imgData:imgData,propData:propData,interactData:interactData};
 	res.send(sendData);
+	
+	*/
 });
 
 var server = http.createServer(app);
