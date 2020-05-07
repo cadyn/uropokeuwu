@@ -5,7 +5,7 @@ var bodyParser = require('body-parser');
 var multer = require( 'multer' );
 var fs = require( 'fs-extra' );
 var merge = require('merge');
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 8080;
 
 var rooms = ["selectroom","room1","room2","room3","room4","room5","room6","room7","room8"];
 //http setting
@@ -17,7 +17,7 @@ app
 	.use(vhost('lJJHigginsl.github.io',express.static(__dirname + "/game/public/")))
 	.use(vhost('oricha.ouroporos.net',express.static(__dirname + "/game/public/")))
 app.use(bodyParser.urlencoded({extended: true}));
-
+app.use(express.static('public'));
 const redis = require("redis");
 
 //const io = require('socket.io')(server);
