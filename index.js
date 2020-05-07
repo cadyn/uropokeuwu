@@ -19,7 +19,7 @@ app
 app.use(bodyParser.urlencoded({extended: true}));
 
 const redis = require("redis");
-var server = http.createServer(app);
+
 //const io = require('socket.io')(server);
 //const adapt = require('socket.io-redis');
 var redis_conf = require("./redis_conf.js");
@@ -34,8 +34,7 @@ publisher.auth("FtsrZwcb7yC5EC95Qz5pn2vqBHO9EhHo", (err) => {
   });
 publisher.setMaxListeners(0);
 //io.adapter(adapt({pubClient:publisher,subClient:rediscli}));
-server.listen(port);
-console.log("http server listening on %d", port)
+
 
 
 /*var redis = require("redis");
@@ -146,4 +145,7 @@ app.post('/chara_data_get_all',function(req,res){
 	
 });*/
 
+var server = http.createServer(app);
+server.listen(port);
+console.log("http server listening on %d", port)
 
