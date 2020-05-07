@@ -19,7 +19,9 @@ app
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static('public'));
 const redis = require("redis");
-
+app.get('/', function (req, res) {
+  res.render('index', {});
+});
 //const io = require('socket.io')(server);
 //const adapt = require('socket.io-redis');
 var redis_conf = require("./redis_conf.js");
