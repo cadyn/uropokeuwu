@@ -37,7 +37,7 @@ app.post('/systemmes',function(req,res){
 		send_data["type"] = "sys_message";
 		send_data["message"] = message;
 		rooms.forEach(function each(room){
-			publisher.publish(dbname+"_"+room,JSON.stringify(send_data));
+			rediscli.publish(dbname+"_"+room,JSON.stringify(send_data));
 		})
 		
 	// postデータはreq.body.xxxで受け取る
@@ -135,12 +135,9 @@ app.post('/chara_data_get_all',function(req,res){
 
 var server = http.createServer(app);
 const io = require('socket.io')(server);
-const adapt = require('socket.io-redis');
 var redis_conf = require("./redis_conf.js");
-var rediscli = redis.createClient(redis_conf.setting);
+var rediscli = require('socket.io-redis');
 rediscli.setMaxListeners(0);
-var publisher = redis.createClient(redis_conf.setting);
-publisher.setMaxListeners(0);
 io.adapter(adapt({ host: '127.0.0.1', port: 6379 }));
 server.listen(port);
 console.log("http server listening on %d", port)
