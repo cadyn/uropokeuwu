@@ -18,9 +18,11 @@ app
 	.use(vhost('oricha.ouroporos.net',express.static(__dirname + "/game/public/")))
 app.use(bodyParser.urlencoded({extended: true}));
 
-
-var redis = require("redis");
-const io = require('socket.io')(redis);
+const io = require('socket.io')(port);
+const redis = require('socket.io-redis');
+io.adapter(redis({ host: 'localhost', port: 6379 }));
+/*var redis = require("redis");
+const io = require('socket.io')(redis);*/
 var redis_conf = require("./redis_conf.js");
 var rediscli = redis.createClient(redis_conf.setting);
 rediscli.setMaxListeners(0);
