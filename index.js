@@ -18,7 +18,11 @@ app
 	.use(vhost('oricha.ouroporos.net',express.static(__dirname + "/game/public/")))
 app.use(bodyParser.urlencoded({extended: true}));
 
-
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, err => {
+    if(err) throw err;
+    console.log("%c Server running", "color: green");
+});
 
 var redis = require("redis");
 var redis_conf = require("./redis_conf.js");
