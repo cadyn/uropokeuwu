@@ -20,8 +20,8 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 const redis = require("redis");
 var server = http.createServer(app);
-const io = require('socket.io')(server);
-const adapt = require('socket.io-redis');
+//const io = require('socket.io')(server);
+//const adapt = require('socket.io-redis');
 var redis_conf = require("./redis_conf.js");
 var rediscli = redis.createClient(redis_conf.setting);
 rediscli.auth("FtsrZwcb7yC5EC95Qz5pn2vqBHO9EhHo", (err) => {
@@ -33,7 +33,7 @@ publisher.auth("FtsrZwcb7yC5EC95Qz5pn2vqBHO9EhHo", (err) => {
     if (err) throw err;
   });
 publisher.setMaxListeners(0);
-io.adapter(adapt({pubClient:publisher,subClient:rediscli}));
+//io.adapter(adapt({pubClient:publisher,subClient:rediscli}));
 server.listen(port);
 console.log("http server listening on %d", port)
 
