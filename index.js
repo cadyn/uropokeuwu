@@ -20,7 +20,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 const redis = require("redis");
 
-const adapt = require('socket.io-redis');
+
 
 /*var redis = require("redis");
 const io = require('socket.io')(redis);*/
@@ -136,6 +136,7 @@ app.post('/chara_data_get_all',function(req,res){
 var server = http.createServer(app);
 const io = require('socket.io')(server);
 io.adapter(adapt({ host: '127.0.0.1', port: 6379 }));
+const adapt = require('socket.io-redis');
 var redis_conf = require("./redis_conf.js");
 var rediscli = redis.createClient(redis_conf.setting);
 rediscli.setMaxListeners(0);
