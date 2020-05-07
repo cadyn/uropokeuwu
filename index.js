@@ -5,8 +5,11 @@ var bodyParser = require('body-parser');
 var multer = require( 'multer' );
 var fs = require( 'fs-extra' );
 var merge = require('merge');
-
-var port = 80;
+const port = process.env.PORT || 3000;
+app.listen(PORT, err => {
+    if(err) throw err;
+    console.log("%c Server running", "color: green");
+});
 var rooms = ["selectroom","room1","room2","room3","room4","room5","room6","room7","room8"];
 //http setting
 var app = express();
@@ -18,11 +21,7 @@ app
 	.use(vhost('oricha.ouroporos.net',express.static(__dirname + "/game/public/")))
 app.use(bodyParser.urlencoded({extended: true}));
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, err => {
-    if(err) throw err;
-    console.log("%c Server running", "color: green");
-});
+
 
 var redis = require("redis");
 var redis_conf = require("./redis_conf.js");
