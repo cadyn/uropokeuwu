@@ -6,7 +6,7 @@ var multer = require( 'multer' );
 var fs = require( 'fs-extra' );
 var merge = require('merge');
 const port = process.env.PORT || 3000;
-app.listen(PORT, err => {
+app.listen(port, err => {
     if(err) throw err;
     console.log("%c Server running", "color: green");
 });
