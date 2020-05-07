@@ -17,10 +17,6 @@ app
 	.use(vhost('lJJHigginsl.github.io',express.static(__dirname + "/game/public/")))
 	.use(vhost('oricha.ouroporos.net',express.static(__dirname + "/game/public/")))
 app.use(bodyParser.urlencoded({extended: true}));
-app.listen(port, err => {
-    if(err) throw err;
-    console.log("%c Server running", "color: green");
-});
 
 
 var redis = require("redis");
