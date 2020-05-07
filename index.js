@@ -20,6 +20,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 
 var redis = require("redis");
+const io = require('socket.io')(redis);
 var redis_conf = require("./redis_conf.js");
 var rediscli = redis.createClient(redis_conf.setting);
 rediscli.setMaxListeners(0);
