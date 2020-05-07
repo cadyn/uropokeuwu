@@ -6,10 +6,7 @@ var multer = require( 'multer' );
 var fs = require( 'fs-extra' );
 var merge = require('merge');
 const port = process.env.PORT || 3000;
-app.listen(port, err => {
-    if(err) throw err;
-    console.log("%c Server running", "color: green");
-});
+
 var rooms = ["selectroom","room1","room2","room3","room4","room5","room6","room7","room8"];
 //http setting
 var app = express();
@@ -20,7 +17,10 @@ app
 	.use(vhost('lJJHigginsl.github.io',express.static(__dirname + "/game/public/")))
 	.use(vhost('oricha.ouroporos.net',express.static(__dirname + "/game/public/")))
 app.use(bodyParser.urlencoded({extended: true}));
-
+app.listen(port, err => {
+    if(err) throw err;
+    console.log("%c Server running", "color: green");
+});
 
 
 var redis = require("redis");
