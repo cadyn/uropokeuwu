@@ -135,7 +135,7 @@ app.post('/chara_data_get_all',function(req,res){
 
 var server = http.createServer(app);
 const io = require('socket.io')(server);
-io.adapter(adapt({ host: 'localhost', port: 6379 }));
+io.adapter(adapt({ host: '127.0.0.1', port: 6379 }));
 var redis_conf = require("./redis_conf.js");
 var rediscli = redis.createClient(redis_conf.setting);
 rediscli.setMaxListeners(0);
